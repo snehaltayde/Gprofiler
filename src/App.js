@@ -1,26 +1,121 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Fragment} from 'react';
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import './App.css';
+import Navbar from './components/layout/Navbar';
+import Users from './components/users/Users';
+import User from './components/users/User';
+import Search from './components/users/Search';
+import Alert from './components/layout/Alert';
+import About from './components/pages/About'
+import axios from 'axios';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class App extends React.Component{
+
+    state = {
+      users: [],
+      user: {},
+      repos: [],
+      loading: false,
+      alert: null
+    }
+    async componentDidMount(){
+      this.setState({loading:true});
+
+    const res = await axios.get(`https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
+
+      this.setState({users:res.data, loading: false});
+  }
+  //Search github users.
+  searchUsers = async text => {
+    this.setState({loading:true});
+
+    const res = await axios.get(`https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
+
+    this.setState({users:res.data.items, loading: false});
+  };
+
+//Get Single USer
+GetUser = async (username)=>{
+  this.setState({loading:true});
+
+  const res = await axios.get(`https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
+
+    this.setState({user:res.data, loading: false});
 }
+
+//Get User Repos
+GetUserRepos = async(username)=>{
+  this.setState({loading:true});
+
+  const res = await axios.get(`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
+
+    this.setState({repos:res.data, loading: false});
+
+}
+
+//cleaars search from state
+  clearUsers = ()=>{
+    this.setState({users: [], loading:false});
+  }
+
+  //Set Alert
+  setAlert=(msg,type)=>{
+    this.setState({alert: {msg:msg , type:type}})
+    setTimeout(()=>     this.setState({alert: null}), 2000)
+  
+}
+
+  render(){
+    return (
+      <Router> 
+      <div className="App">
+      <Navbar  title ="Github Profiler" icon="fa fa-github"/>
+      <div className="container">
+      <h4 className="text-center"> Github Finder Tool</h4>
+      <Alert alert ={this.state.alert}/>
+      <Switch>
+      <Route exact path='/' render={props => (
+        <Fragment> 
+          <Search 
+          searchUsers={this.searchUsers} 
+          clearUsers={this.clearUsers} 
+          showClear={this.state.users.length > 0 ? true : false }
+          setAlert={this.setAlert}
+          />
+          <Users 
+          users= {this.state.users} 
+          loading={this.state.loading}
+          />
+        
+        </Fragment>
+      )}
+       />
+
+        <Route exact path='/about' render ={props=>(
+                  <Fragment> 
+
+                    <h1>Page Page</h1>
+              <About />
+        </Fragment> 
+
+        )} />
+
+        <Route exact path='/user/:login' render ={props=>(
+        <User {...props} GetUser ={this.GetUser} GetUserRepos ={this.GetUserRepos} user={this.state.user} repos={this.state.repos} loading={this.state.loading}/>
+
+        )} />
+      </Switch>
+      
+      </div>
+    
+      </div>
+      </Router>
+    );
+  }
+  
+}
+
+
 
 export default App;

@@ -1,0 +1,129 @@
+npm uninstall -g create-react-app
+
+install and create app in the same folder: npx create-react-app .
+
+install and create app in the foldername folder: npx create-react-app foldername
+
+//Function based component
+
+function App() {
+  return (
+    <div className="App">
+    <h1> Github Finder</h1>
+    </div>
+  );
+}
+
+export default App;
+
+//Class based component
+
+class App extends React.Component{
+  render(){
+    return (
+      <div className="App">
+      <h1> Github Finder</h1>
+      </div>
+    );
+  }
+  
+}
+
+If we dont want to use <div className="App">
+we can use <React.Fragment>
+
+//Class based component with variable 
+class App extends React.Component{
+  render(){
+    const name = "Github Finder Tool";
+    return (
+      <div className="App">
+      <h1> {name}</h1>
+      </div>
+    );
+  }
+  
+}
+
+//Class based component with function in jSX syntax 
+class App extends React.Component{
+  render(){
+      foo = ()=> 'Bars'
+    const name = "Github Finder Tool";
+    return (
+      <div className="App">
+      <h1> {foo()}</h1>
+      </div>
+    );
+  }
+  
+}
+
+we can add any javascript expression inside { }.
+
+ternerary operator
+loading ? <h4>Hello world</h4> : <h4>New world</h4>
+where ? is If
+and : is else
+
+
+//Props. We can pass props and call them in the component
+ <i className={this.props.icon} />
+                 {this.props.title}
+
+//we can also set default props
+ static defaultProps ={
+        title :"Github Profile Finder",
+        icon : "fa fa-github"
+    }
+//We can also restrict a datatype to props using PropTypes
+//we will have to call propTypes in our file like below example.
+import PropTypes from 'prop-types';
+
+ static propTypes = {
+        title: PropTypes.string.isRequired,
+        icom: PropTypes.string.isRequired
+    }
+
+    //We can add inline CSs in react by using doble curly braces style={{width:100%; backgroundColor: red}}
+    we have to use camel case in case of two words.
+
+
+            //Destructuring Removed the need of adding this.state.
+        const {login, avatar_url, html_url} = this.state;
+
+We use Axios for fetching data, we can also use Fetch for the same. here componentDidMount is a lifecycle method, which runs when component is mounted in App.
+async componentDidMount(){
+      this.setState({loading:true});
+
+    const res = await axios.get(`https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
+
+      this.setState({users:res.data, loading: false});
+  }
+
+//We can Create React Routes using react router dom
+///Here is how we can import it
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+
+//In App component we can add a Switch and route methods to add a route for any specific page.
+///To use Frgaments we have to call Fragment From React like below.
+import React, {Fragment} from 'react';
+//Fragment is nothing but a empty psuedo HTML element. 
+<Switch>
+      <Route exact path='/' render={props => (
+        <Fragment> 
+          <Search 
+          searchUsers={this.searchUsers} 
+          clearUsers={this.clearUsers} 
+          showClear={this.state.users.length > 0 ? true : false }
+          setAlert={this.setAlert}
+          />
+          <Users 
+          users= {this.state.users} 
+          loading={this.state.loading}
+          />
+        
+        </Fragment>
+      )}
+       />
+      </Switch>
