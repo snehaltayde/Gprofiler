@@ -1,11 +1,10 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 //Function Based Component
 function UsersItem (props) {
         //Destructuring Removed the need of adding this.state.
-        const {login, avatar_url, html_url} = props.user;
+        const {login, avatar_url} = props.user;
         return (
             <div className="card text-center"> 
             <img src={avatar_url} alt="" className="round-img" style={{width: '60px'}}/>
@@ -17,9 +16,7 @@ function UsersItem (props) {
 }
 
 
-UsersItem.propTypes = {
-    user : PropTypes.object.isRequired
-}
+
 export default UsersItem;
 
 //Class Based function

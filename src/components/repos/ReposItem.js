@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 
 const ReposItem = ({repo}) => {
     return (
@@ -11,8 +10,5 @@ const ReposItem = ({repo}) => {
     )
 }
 
-ReposItem.propTypes = {
-
-}
 
 export default ReposItem;
